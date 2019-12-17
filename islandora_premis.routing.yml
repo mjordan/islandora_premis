@@ -1,0 +1,15 @@
+islandora_premis.premis:
+  path: '/node/{node}/premis'
+  defaults:
+    _controller: '\Drupal\islandora_premis\Controller\IslandoraPremisPremisController::main'
+  requirements:
+    _permission: 'access content'
+    node: \d+
+
+islandora_premis.settings:
+  path: '/admin/config/islandora_premis/settings'
+  defaults:
+    _form: '\Drupal\islandora_riprap\Plugin\Form\IslandoraPremisSettingsForm'
+    _title: 'Islandora PREMIS'
+  requirements:
+    _permission: 'administer site configuration'

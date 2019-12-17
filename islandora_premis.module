@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * Implements hook_islandora_premis_turtle_alter().
+*/
+function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  $path_args = explode('/', ltrim($current_path, '/'));
+  if (count($path_args) == 3 && $path_args[0] == 'node' && $path_args[2] == 'premis') {
+    $nid = $path_args[1];
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+  }
+  if (!$node) {
+    return array();
+  }
+
+  // Assemble the Fedora URL.
+  $uuid = $node->uuid();
+  $uuid_parts = explode('-', $uuid);
+  $subparts = str_split($uuid_parts[0], 2);
+  $fedora_url = 'http://localhost:8080/fcrepo/rest/' . implode('/', $subparts) . '/'. $uuid;
+  // Get the Turtle from Fedora.
+  $client = \Drupal::httpClient();
+  $response = $client->request('GET', $fedora_url, ['http_errors' => false]);
+  if ($response->getStatusCode() == 404) {
+    $response_output = t('Resource @fedora_url not found.', array('@fedora_url' => $fedora_url));
+  } else {
+    $turtle = (string) $response->getBody();
+  }  
+}

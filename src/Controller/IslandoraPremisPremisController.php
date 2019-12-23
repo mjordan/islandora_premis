@@ -20,13 +20,14 @@ class IslandoraPremisPremisController extends ControllerBase {
      $path_args = explode('/', $current_path);
      $nid = $path_args[2];
 
-     // Allow other modules to modify $config_file_contents before it is POSTed to the microservice.
-     $turtle = '@prefix premis: <http://www.loc.gov/premis/rdf/v3/> .' . "\n";
+     // Allow modules to modify the PREMIS turtle output.
      \Drupal::moduleHandler()->invokeAll('islandora_premis_turtle_alter', [$nid, &$turtle]);
 
-     $output = "\n";
-     $output .= $turtle;
-
+     // Create and serialize the graph, then send it to the client.
+     $graph = new \EasyRdf_Graph();
+     $graph->parse($turtle);
+     $output = $graph->serialise('turtle');
+     
      $response = new Response($output, 200);
      $response->headers->set("Content-Type", 'text/turtle');
      return $response;

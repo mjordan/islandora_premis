@@ -14,17 +14,11 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
     return array();
   }
 
-  // Assemble the Fedora URL.
-  $uuid = $node->uuid();
-  $uuid_parts = explode('-', $uuid);
-  $subparts = str_split($uuid_parts[0], 2);
-  $fedora_url = 'http://localhost:8080/fcrepo/rest/' . implode('/', $subparts) . '/'. $uuid;
-  // Get the Turtle from Fedora.
-  $client = \Drupal::httpClient();
-  $response = $client->request('GET', $fedora_url, ['http_errors' => false]);
-  if ($response->getStatusCode() == 404) {
-    $response_output = t('Resource @fedora_url not found.', array('@fedora_url' => $fedora_url));
-  } else {
-    $turtle = (string) $response->getBody();
-  }  
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+  $resource = $base_url . '/node/' . $nid; 
+  $url = $base_url . '/node/' . $nid . "?_format=jsonld";
+  $graph = EasyRdf_Graph::newAndLoad($url);
+  $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
+  $data = $graph->serialise('turtle');
+  $turtle .= $data;
 }

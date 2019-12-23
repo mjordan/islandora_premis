@@ -13,18 +13,32 @@
 /**
  * Alter the serialized Turtle.
  *
+ * Implementations should use EasyRdf or another Turtle library
+ * instead of manually altering the Turtle.
+ *
  * @param string $nid
  *   The current node's ID.
  * @param string $turtle
  *   The serialized Turtle.
  */
 function hook_islandora_premis_turtle_alter($nid, &$turtle) {
-  $prefix = '@prefix crypHashFunc: <http://id.loc.gov/vocabulary/preservation/cryptographicHashFunctions/> .' . "\n" .
-    '@prefix evOutcome: <http://id.loc.gov/vocabulary/preservationevOutcome/> .' . "\n";
-  $statement = "\n" . '<0912-0001Fixity> a crypHashFunc:sha256 ;
-    rdf:value "a9ccb64f06f9c7098b76ac4a51074fd285b48f4b248857221f82111a1656d193" ;
-    dce:creator "hashlib.sha256" .' . "\n";
-  $turtle = $prefix . $turtle . $statement;
+  $current_path = \Drupal::service('path.current')->getPath();
+  $path_args = explode('/', ltrim($current_path, '/'));
+  if (count($path_args) == 3 && $path_args[0] == 'node' && $path_args[2] == 'premis') {
+    $nid = $path_args[1];
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+  }
+  if (!$node) {
+    return array();
+  }
+
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+  $resource = $base_url . '/node/' . $nid;
+  $url = $base_url . '/node/' . $nid . "?_format=jsonld";
+  $graph = EasyRdf_Graph::newAndLoad($url);
+  $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
+  $data = $graph->serialise('turtle');
+  $turtle .= $data;
 }
 
 /**

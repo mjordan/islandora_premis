@@ -9,51 +9,64 @@ This module is not ready for prodcution use.
 Output will look like this:
 
 ```
-@prefix crypHashFunc: <http://id.loc.gov/vocabulary/preservation/cryptographicHashFunctions/> .
-@prefix evOutcome: <http://id.loc.gov/vocabulary/preservationevOutcome/> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix fedora:  <http://fedora.info/definitions/v4/repository#> .
-@prefix ldp:  <http://www.w3.org/ns/ldp#> .
-@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix premisobject: <http://www.loc.gov/premis/rdf/v3/Object> .
+@prefix premis: <http://id.loc.gov/vocabulary/preservation/eventOutcome> .
+@prefix ebucore: <https://www.ebu.ch/metadata/ontologies/ebucore#> .
+@prefix cryphashfunc: <http://id.loc.gov/vocabulary/preservation/cryptographicHashFunctions/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <http://schema.org/> .
 
-<http://localhost:8080/fcrepo/rest/35/7b/f2/3b/357bf23b-0391-4128-8675-28fc080c6a8d>
-        rdf:type                    fedora:Container ;
-        rdf:type                    fedora:Resource ;
-        rdf:type                    ldp:BasicContainer ;
-        rdf:type                    <https://schema.org/DigitalDocument> ;
-        rdf:type                    <http://pcdm.org/models#Object> ;
-        fedora:lastModifiedBy       "bypassAdmin" ;
-        <http://schema.org/dateModified>  "2019-12-09T14:41:25+00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://schema.org/author>  <http://localhost:8000/user/1> ;
-        <http://schema.org/sameAs>  <http://localhost:8000/node/1> ;
-        <http://schema.org/dateCreated>  "2019-12-09T14:39:07+00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        dcterms:extent              "1 item" ;
-        fedora:createdBy            "bypassAdmin" ;
-        fedora:lastModified         "2019-12-09T14:41:26.271Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        fedora:created              "2019-12-09T14:40:02.879Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        dcterms:title               "A document!"@en ;
-        rdf:type                    ldp:RDFSource ;
-        rdf:type                    ldp:Container .
+<http://127.0.0.1:8080/fcrepo/rest/2019-12/Evaluation and Effectiveness of Digital Preservation.pdf>
+  a premisobject:File ;
+  premis:size "534450" ;
+  premis:compositionLevel 0 ;
+  ebucore:hasMimeType "application/pdf" ;
+  premis:fixity "7b44c786-6d7e-4764-b278-d1ac1d503d99", "324bd1b9-0a38-400d-bd07-2026801e1040", "458f3e38-34c8-412d-879f-0ec3c5a1c37c", "eb7951ac-3baf-4661-a181-76ef0995744b", "d3e39c84-ae5d-44bb-b8ce-fbe9289b1f31" .
 
-<7c6177b1-5fc9-4198-bec7-0ba7b97e9af2> a crypHashFunc:sha256 ;
-        rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
-        evType "fix" ;
-        evOutcome "success" ;
-<5a0f8a0c-172f-4409-a646-13279fb4c61b> a crypHashFunc:sha256 ;
-        rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
-        evType "fix" ;
-        evOutcome "success" ;
-<68253adc-71fb-4ddc-9edd-acb5c70d30c1> a crypHashFunc:sha256 ;
-        rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
-        evType "fix" ;
-        evOutcome "success" ;
-<b0fa858e-c081-4ca1-ae88-5763b4baad69> a crypHashFunc:sha256 ;
-        rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
-        evType "fix" ;
-        evOutcome "success" ;
+<7b44c786-6d7e-4764-b278-d1ac1d503d99>
+  a <http://id.loc.gov/vocabulary/preservation/eventType/fix>, cryphashfunc:sha256 ;
+  rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
+  dc:created "2019-12-21T15:41:00-0600" ;
+  premis:outcome "success" .
+
+<http://localhost:8000/node/1>
+  a <http://pcdm.org/models#Object>, <https://schema.org/DigitalDocument>, <http://www.loc.gov/premis/rdf/v3/IntellectualEntity> ;
+  dc:extent "1 item"^^xsd:string ;
+  dc:title "A document!"@en ;
+  schema:author <http://localhost:8000/user/1> ;
+  schema:dateCreated "2019-12-09T14:39:07+00:00"^^xsd:dateTime ;
+  schema:dateModified "2019-12-09T14:41:25+00:00"^^xsd:dateTime ;
+  schema:sameAs <http://localhost:8000/node/1> .
+
+<http://localhost:8000/user/1> a schema:Person .
+<324bd1b9-0a38-400d-bd07-2026801e1040>
+  a <http://id.loc.gov/vocabulary/preservation/eventType/fix>, cryphashfunc:sha256 ;
+  rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
+  dc:created "2019-12-22T11:44:31-0600" ;
+  premis:outcome "success" .
+
+<458f3e38-34c8-412d-879f-0ec3c5a1c37c>
+  a <http://id.loc.gov/vocabulary/preservation/eventType/fix>, cryphashfunc:sha256 ;
+  rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
+  dc:created "2019-12-22T16:16:37-0600" ;
+  premis:outcome "success" .
+
+<eb7951ac-3baf-4661-a181-76ef0995744b>
+  a <http://id.loc.gov/vocabulary/preservation/eventType/fix>, cryphashfunc:sha256 ;
+  rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
+  dc:created "2019-12-23T11:28:13-0600" ;
+  premis:outcome "success" .
+
+<d3e39c84-ae5d-44bb-b8ce-fbe9289b1f31>
+  a <http://id.loc.gov/vocabulary/preservation/eventType/fix>, cryphashfunc:sha256 ;
+  rdf:value "6933a46f55f27a62689406ea33c650b1c16d6268ee81f6c6a2a89c63aeec9d27" ;
+  dc:created "2019-12-23T16:19:05-0600" ;
+  premis:outcome "success" .
 ```
 
-Note that the fixity events are added by the Islandora Riprap module, which implements Islandora PREMIS's `hook_islandora_premis_turtle_alter()` hook to add data to the PREMIS Turtle.
+Note that the fixity events are added by the [Islandora Riprap](https://github.com/mjordan/islandora_riprap) module, which implements Islandora PREMIS's `hook_islandora_premis_turtle_alter()` hook to add data to the PREMIS Turtle.
 
 ## Requirements
 

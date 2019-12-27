@@ -4,7 +4,13 @@
  * Implements hook_islandora_premis_turtle_alter().
 */
 function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
+  $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+  $utils = \Drupal::service('islandora.utils');
+  $islandora_riprap_utils = \Drupal::service('islandora_riprap.utils');
+  $media_source = \Drupal::service('islandora.media_source_service');
+  $gemini = \Drupal::service('islandora.gemini.lookup');
   $current_path = \Drupal::service('path.current')->getPath();
+  
   $path_args = explode('/', ltrim($current_path, '/'));
   if (count($path_args) == 3 && $path_args[0] == 'node' && $path_args[2] == 'premis') {
     $nid = $path_args[1];
@@ -19,6 +25,49 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   $url = $base_url . '/node/' . $nid . "?_format=jsonld";
   $graph = EasyRdf_Graph::newAndLoad($url);
   $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
-  $data = $graph->serialise('turtle');
-  $turtle .= $data;
+  
+  $media = $utils->getMedia($node);
+
+  if (count($media) > 0) {
+    foreach ($media as $medium) {
+      $file = $media_source->getSourceFile($medium);
+      $file_url = $gemini->lookup($file);
+      if (is_null($file_url)) {
+        return;
+      }
+
+      // Not sure how to avoid a dependency on Islandora Riprap....
+      $config = \Drupal::config('islandora_riprap.settings');
+      if ($config->get('use_drupal_urls')) {
+        $binary_resource_url = $islandora_riprap_utils->getLocalUrl($medium->id());
+      }
+      else {
+	$binary_resource_url = $file_url;
+      }
+
+      // Register some namespaces.
+      $ns = new EasyRdf_Namespace();
+      $ns->set('premisObject', 'http://www.loc.gov/premis/rdf/v3/Object');
+      $ns->set('premis', 'http://id.loc.gov/vocabulary/preservation/eventOutcome');
+      $ns->set('crypHashFunc', 'http://id.loc.gov/vocabulary/preservation/cryptographicHashFunctions/');
+      $ns->set('ebucore', 'https://www.ebu.ch/metadata/ontologies/ebucore#');
+
+      $graph->resource($binary_resource_url, 'premisObject:File');
+      $graph->add($binary_resource_url, 'premis:size', $file->getSize());
+      $graph->add($binary_resource_url, 'premis:compositionLevel', 0);
+      $graph->add($binary_resource_url, 'ebucore:hasMimeType', $file->getMimeType());
+
+      // @todo: Add this as an Islandora PREMIS' config option.
+      $original_name_field = 'field_original_name';
+      if ($medium->hasField($original_name_field)) {
+        $original_name = trim($medium->get($original_name_field)->getString());
+        if (strlen($original_name)) {
+          $graph->add($binary_resource_url, 'premis:originalName', $original_name);
+	}
+      }
+
+      $turtle = $graph->serialise('turtle');
+    }
+  }
+
 }

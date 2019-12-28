@@ -9,7 +9,7 @@ islandora_premis.premis:
 islandora_premis.settings:
   path: '/admin/config/islandora_premis/settings'
   defaults:
-    _form: '\Drupal\islandora_riprap\Plugin\Form\IslandoraPremisSettingsForm'
+    _form: '\Drupal\islandora_premis\Plugin\Form\IslandoraPremisSettingsForm'
     _title: 'Islandora PREMIS'
   requirements:
     _permission: 'administer site configuration'

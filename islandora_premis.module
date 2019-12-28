@@ -4,6 +4,7 @@
  * Implements hook_islandora_premis_turtle_alter().
 */
 function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
+  $config = \Drupal::config('islandora_premis.settings');
   $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
   $utils = \Drupal::service('islandora.utils');
   $islandora_riprap_utils = \Drupal::service('islandora_riprap.utils');
@@ -37,8 +38,8 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
       }
 
       // Not sure how to avoid a dependency on Islandora Riprap....
-      $config = \Drupal::config('islandora_riprap.settings');
-      if ($config->get('use_drupal_urls')) {
+      $riprap_config = \Drupal::config('islandora_riprap.settings');
+      if ($riprap_config->get('use_drupal_urls')) {
         $binary_resource_url = $islandora_riprap_utils->getLocalUrl($medium->id());
       }
       else {
@@ -57,8 +58,7 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
       $graph->add($binary_resource_url, 'premis:compositionLevel', 0);
       $graph->add($binary_resource_url, 'ebucore:hasMimeType', $file->getMimeType());
 
-      // @todo: Add this as an Islandora PREMIS' config option.
-      $original_name_field = 'field_original_name';
+      $original_name_field = $config->get('islandora_premis_file_original_name_field');
       if ($medium->hasField($original_name_field)) {
         $original_name = trim($medium->get($original_name_field)->getString());
         if (strlen($original_name)) {

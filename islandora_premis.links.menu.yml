@@ -1,0 +1,7 @@
+system.islandora_premis_settings:
+  title: 'PREMIS preservation metadata'
+  parent: system.admin_config_islandora
+  route_name: islandora_premis.settings
+  description: 'Configure the Islandora PREMIS module.'
+
+

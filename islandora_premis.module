@@ -7,10 +7,12 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   $config = \Drupal::config('islandora_premis.settings');
   $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
   $utils = \Drupal::service('islandora.utils');
-  $islandora_riprap_utils = \Drupal::service('islandora_riprap.utils');
   $media_source = \Drupal::service('islandora.media_source_service');
   $gemini = \Drupal::service('islandora.gemini.lookup');
   $current_path = \Drupal::service('path.current')->getPath();
+  if (\Drupal::moduleHandler()->moduleExists('islandora_riprap')) {
+    $islandora_riprap_utils = \Drupal::service('islandora_riprap.utils');
+  }
   
   $path_args = explode('/', ltrim($current_path, '/'));
   if (count($path_args) == 3 && $path_args[0] == 'node' && $path_args[2] == 'premis') {
@@ -37,13 +39,12 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
         return;
       }
 
-      // Not sure how to avoid a dependency on Islandora Riprap....
-      $riprap_config = \Drupal::config('islandora_riprap.settings');
-      if ($riprap_config->get('use_drupal_urls')) {
-        $binary_resource_url = $islandora_riprap_utils->getLocalUrl($medium->id());
-      }
-      else {
-	$binary_resource_url = $file_url;
+      $binary_resource_url = $file_url;
+      if (\Drupal::moduleHandler()->moduleExists('islandora_riprap')) {
+        $riprap_config = \Drupal::config('islandora_riprap.settings');
+        if ($riprap_config->get('use_drupal_urls')) {
+          $binary_resource_url = $islandora_riprap_utils->getLocalUrl($medium->id());
+        }
       }
 
       // Register some namespaces.

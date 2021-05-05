@@ -37,9 +37,17 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   if (count($media) > 0) {
     foreach ($media as $medium) {
       $file = $media_source->getSourceFile($medium);
-      $binary_resource_url = $file_uri_lookup->getUrl($medium->id());
-      if (is_null($binary_resource_url)) {
+      $file_url = $file_uri_lookup->getUrl($medium->id());
+      if (is_null($file_url)) {
         return;
+      }
+
+      $binary_resource_url = $file_url;
+      if (\Drupal::moduleHandler()->moduleExists('islandora_riprap')) {
+        $riprap_config = \Drupal::config('islandora_riprap.settings');
+        if ($riprap_config->get('use_drupal_urls')) {
+          $binary_resource_url = $islandora_riprap_utils->getLocalUrl($medium->id());
+        }
       }
 
       // Register some namespaces.

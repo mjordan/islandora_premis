@@ -1,5 +1,8 @@
 <?php
 
+use EasyRdf\Graph;
+use EasyRdf\RdfNamespace;
+
 /**
  * Implements hook_islandora_premis_turtle_alter().
 */
@@ -8,7 +11,7 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
   $utils = \Drupal::service('islandora.utils');
   $media_source = \Drupal::service('islandora.media_source_service');
-  $gemini = \Drupal::service('islandora.gemini.lookup');
+  $file_uri_lookup = \Drupal::service('islandora_premis.utils');
   $current_path = \Drupal::service('path.current')->getPath();
   if (\Drupal::moduleHandler()->moduleExists('islandora_riprap')) {
     $islandora_riprap_utils = \Drupal::service('islandora_riprap.utils');
@@ -26,7 +29,7 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
   $resource = $base_url . '/node/' . $nid; 
   $url = $base_url . '/node/' . $nid . "?_format=jsonld";
-  $graph = EasyRdf_Graph::newAndLoad($url);
+  $graph = Graph::newAndLoad($url);
   $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
   
   $media = $utils->getMedia($node);
@@ -34,21 +37,13 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   if (count($media) > 0) {
     foreach ($media as $medium) {
       $file = $media_source->getSourceFile($medium);
-      $file_url = $gemini->lookup($file);
-      if (is_null($file_url)) {
+      $binary_resource_url = $file_uri_lookup->getUrl($medium->id());
+      if (is_null($binary_resource_url)) {
         return;
       }
 
-      $binary_resource_url = $file_url;
-      if (\Drupal::moduleHandler()->moduleExists('islandora_riprap')) {
-        $riprap_config = \Drupal::config('islandora_riprap.settings');
-        if ($riprap_config->get('use_drupal_urls')) {
-          $binary_resource_url = $islandora_riprap_utils->getLocalUrl($medium->id());
-        }
-      }
-
       // Register some namespaces.
-      $ns = new EasyRdf_Namespace();
+      $ns = new RdfNamespace();
       $ns->set('premisObject', 'http://www.loc.gov/premis/rdf/v3/Object');
       $ns->set('premis', 'http://id.loc.gov/vocabulary/preservation/eventOutcome');
       $ns->set('crypHashFunc', 'http://id.loc.gov/vocabulary/preservation/cryptographicHashFunctions/');

@@ -1,0 +1,3 @@
+services:
+  islandora_premis.utils:
+    class: Drupal\islandora_premis\Utils

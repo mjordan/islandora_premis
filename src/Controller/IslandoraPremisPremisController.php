@@ -1,5 +1,7 @@
 <?php
 
+use EasyRdf\Graph;
+
 namespace Drupal\islandora_premis\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
@@ -24,7 +26,7 @@ class IslandoraPremisPremisController extends ControllerBase {
      \Drupal::moduleHandler()->invokeAll('islandora_premis_turtle_alter', [$nid, &$turtle]);
 
      // Create and serialize the graph, then send it to the client.
-     $graph = new \EasyRdf_Graph();
+     $graph = new \EasyRdf\Graph();
      $graph->parse($turtle);
      $output = $graph->serialise('turtle');
      

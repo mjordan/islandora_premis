@@ -9,8 +9,15 @@ if (class_exists('\EasyRdf_Namespace') && !class_exists('\EasyRdf\RdfNamespace')
 }
 // phpcs:enable
 
+use Drupal\jwt\Authentication\Provider\JwtAuth;
 use EasyRdf\Graph;
 use EasyRdf\RdfNamespace;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\CurlHandler;
+use MadBob\EasyRDFonGuzzle\HttpClient;
+
+
+
 
 
 /**
@@ -36,10 +43,15 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
     return array();
   }
 
-  $base_url = \Drupal::request()->getSchemeAndHttpHost();
-  $resource = $base_url . '/node/' . $nid;
-  $url = $base_url . '/node/' . $nid . "?_format=jsonld";
-  $graph = Graph::newAndLoad($url);
+  $url = \Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE])->toString();
+  /***
+   * @var Symfony\Component\Serializer\Serializer $serializer
+   */
+  $serializer = \Drupal::service('serializer');
+  $jsonld = $serializer->serialize($node, 'jsonld');
+
+  $graph = new Graph($url, $jsonld, 'jsonld');
+
   $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
 
   $media = $utils->getMedia($node);

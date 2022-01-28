@@ -9,16 +9,8 @@ if (class_exists('\EasyRdf_Namespace') && !class_exists('\EasyRdf\RdfNamespace')
 }
 // phpcs:enable
 
-use Drupal\jwt\Authentication\Provider\JwtAuth;
 use EasyRdf\Graph;
 use EasyRdf\RdfNamespace;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Handler\CurlHandler;
-use MadBob\EasyRDFonGuzzle\HttpClient;
-
-
-
-
 
 /**
  * Implements hook_islandora_premis_turtle_alter().
@@ -44,15 +36,15 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   }
 
   $url = \Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE])->toString();
-  /***
+
+  /**
    * @var Symfony\Component\Serializer\Serializer $serializer
    */
   $serializer = \Drupal::service('serializer');
   $jsonld = $serializer->serialize($node, 'jsonld');
 
   $graph = new Graph($url, $jsonld, 'jsonld');
-
-  $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
+  $graph->addType($url, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
 
   $media = $utils->getMedia($node);
 
@@ -89,11 +81,11 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
         $original_name = trim($medium->get($original_name_field)->getString());
         if (strlen($original_name)) {
           $graph->add($binary_resource_url, 'premis:originalName', $original_name);
-	}
+        }
       }
-
-      $turtle = $graph->serialise('turtle');
     }
   }
+  $turtle = $graph->serialise('turtle');
+
 
 }

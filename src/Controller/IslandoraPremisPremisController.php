@@ -4,6 +4,7 @@ namespace Drupal\islandora_premis\Controller;
 
 use EasyRdf\Graph;
 use Drupal\Core\Controller\ControllerBase;
+use \Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,13 +17,10 @@ class IslandoraPremisPremisController extends ControllerBase {
   /**
    * @return Response object
    */
-   public function main() {
-     $current_path = \Drupal::service('path.current')->getPath();
-     $path_args = explode('/', $current_path);
-     $nid = $path_args[2];
+   public function main(NodeInterface $node) {
 
      // Allow modules to modify the PREMIS turtle output.
-     \Drupal::moduleHandler()->invokeAll('islandora_premis_turtle_alter', [$nid, &$turtle]);
+     \Drupal::moduleHandler()->invokeAll('islandora_premis_turtle_alter', [$node->id(), &$turtle]);
 
      // Create and serialize the graph, then send it to the client.
      $graph = new \EasyRdf\Graph();

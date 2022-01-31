@@ -26,11 +26,6 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
     $islandora_riprap_utils = \Drupal::service('islandora_riprap.riprap');
   }
 
-  $path_args = explode('/', ltrim($current_path, '/'));
-  if (count($path_args) == 3 && $path_args[0] == 'node' && $path_args[2] == 'premis') {
-    $nid = $path_args[1];
-    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
-  }
   if (!$node) {
     return array();
   }

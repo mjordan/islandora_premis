@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Update routing table after route change.
+ */
+function islandora_premis_update_8001() {
+  \Drupal::service("router.builder")->rebuild();
+}

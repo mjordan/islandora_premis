@@ -24,9 +24,9 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   $file_uri_lookup = \Drupal::service('islandora_premis.utils');
   $current_path = \Drupal::service('path.current')->getPath();
   if (\Drupal::moduleHandler()->moduleExists('islandora_riprap')) {
-    $islandora_riprap_utils = \Drupal::service('islandora_riprap.utils');
+    $islandora_riprap_utils = \Drupal::service('islandora_riprap.riprap');
   }
-  
+
   $path_args = explode('/', ltrim($current_path, '/'));
   if (count($path_args) == 3 && $path_args[0] == 'node' && $path_args[2] == 'premis') {
     $nid = $path_args[1];
@@ -37,11 +37,11 @@ function islandora_premis_islandora_premis_turtle_alter($nid, &$turtle) {
   }
 
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
-  $resource = $base_url . '/node/' . $nid; 
+  $resource = $base_url . '/node/' . $nid;
   $url = $base_url . '/node/' . $nid . "?_format=jsonld";
   $graph = Graph::newAndLoad($url);
   $graph->addType($resource, "http://www.loc.gov/premis/rdf/v3/IntellectualEntity");
-  
+
   $media = $utils->getMedia($node);
 
   if (count($media) > 0) {

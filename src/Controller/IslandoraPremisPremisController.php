@@ -1,9 +1,8 @@
 <?php
 
-use EasyRdf\Graph;
-
 namespace Drupal\islandora_premis\Controller;
 
+use EasyRdf\Graph;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,11 +28,10 @@ class IslandoraPremisPremisController extends ControllerBase {
      $graph = new \EasyRdf\Graph();
      $graph->parse($turtle);
      $output = $graph->serialise('turtle');
-     
+
      $response = new Response($output, 200);
      $response->headers->set("Content-Type", 'text/turtle');
      return $response;
    }
 
 }
-

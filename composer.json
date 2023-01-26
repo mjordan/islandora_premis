@@ -1,0 +1,20 @@
+{
+  "name": "islandora/islandora_premis",
+  "description": "PREMIS serializer for Islandora",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/mjordan/islandora_premis",
+  "support": {
+      "issues": "https://github.com/mjordan/islandora_premis/issues"
+  },
+  "authors": [
+    {
+        "name": "Mark Jordan",
+        "homepage": "https://github.com/mjordan",
+        "role": "Owner"
+      }
+  ],
+  "require" : {
+      "easyrdf/easyrdf": "^1.1"
+  }
+}

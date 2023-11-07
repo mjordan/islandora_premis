@@ -36,7 +36,7 @@ class Utils {
         $path = $parts['host'] . $parts['path'];
       }
       else {
-        return false;
+        return FALSE;
       }
       $path = ltrim($path, '/');
       $fedora_uri = "$fedora_root/$path";
@@ -44,7 +44,7 @@ class Utils {
     }
     else {
       // 'public' or 'private' filesystem scheme.
-      return(file_create_url($uri));
+      return(\Drupal::service('file_url_generator')->generateAbsoluteString($uri));
     }
   }
 
